@@ -20,36 +20,37 @@ import com.kms.katalon.core.util.TestCloudPropertyUtil;
 import com.kms.katalon.util.MaskedTextUtil;
 
 public class KeywordLogger {
-	
+
 	private static final int HR_LENGTH = 20;
-	
+
 	private static final String TEST_CASE_HR = String.join("", Collections.nCopies(HR_LENGTH, "-"));
-	
+
 	private static final String TEST_SUITE_HR = String.join("", Collections.nCopies(HR_LENGTH, "="));
 
 	private static final String PASSED = "\u2713"; // check
-	
+
 	private static final String FAILED = "\u274C"; // X
-	
+
 	private static final Logger selfLogger = LoggerFactory.getLogger(KeywordLogger.class);
-	
+
 	private static final Map<String, KeywordLogger> keywordLoggerLookup = new ConcurrentHashMap<>();
-	
+
 	private final Logger logger;
-	
+
 	private final XmlKeywordLogger xmlKeywordLogger;
-	
+
 	private boolean shouldLogTestSteps;
-	
+
 	public static KeywordLogger getInstance(Class<?> clazz) {
-		if (clazz == null) { // just in case
+		if (clazz == null) {
+			// just in case
 			selfLogger.error("Logger name is null. This should be a bug of Katalon Studio.");
 			clazz = KeywordLogger.class;
 		}
-		return getInstance(clazz.getName());
+		return getInstanceOf(clazz.getName());
 	}
 
-	private static KeywordLogger getInstance(String name) {
+	private static KeywordLogger getInstanceOf(String name) {
 		KeywordLogger keywordLogger = keywordLoggerLookup.get(name);
 		if (keywordLogger == null) {
 			String testCaseName = ScriptEngine.getTestCaseName(name);
@@ -63,7 +64,7 @@ public class KeywordLogger {
 		}
 		return keywordLogger;
 	}
-	
+
 	private KeywordLogger(String className, String dummy) {
 		logger = LoggerFactory.getLogger(className);
 		xmlKeywordLogger = XmlKeywordLogger.getInstance();
@@ -76,17 +77,17 @@ public class KeywordLogger {
 			shouldLogTestSteps = true;
 		} else {
 			shouldLogTestSteps = (boolean) Optional
-					.ofNullable(executionProperties.get(RunConfiguration.LOG_TEST_STEPS))
-					.orElse(CoreConstants.DEFAULT_LOG_TEST_STEPS);
+			.ofNullable(executionProperties.get(RunConfiguration.LOG_TEST_STEPS))
+			.orElse(CoreConstants.DEFAULT_LOG_TEST_STEPS);
 		}
 	}
-	
+
 	private boolean shouldLogTestSteps() {
 		return shouldLogTestSteps;
 	}
 
 	public KeywordLogger(String className) {
-		
+
 		selfLogger.warn("Please use \"KeywordUtil.logInfo()\" instead of \"new KeywordLogger()\" constructor. \"KeywordLogger\" is an internal API and might be changed in the future.");
 
 		if (StringUtils.isBlank(className)) {
@@ -96,7 +97,7 @@ public class KeywordLogger {
 		xmlKeywordLogger = XmlKeywordLogger.getInstance();
 		initShouldLogTestSteps();
 	}
-	
+
 	public KeywordLogger() {
 		this(null);
 	}
@@ -118,15 +119,15 @@ public class KeywordLogger {
 	public void startSuite(String name, Map<String, String> attributes) {
 		logger.info("START {}", name);
 		xmlKeywordLogger.startSuite(name, attributes);
-		
+
 		logRunData(RunConfiguration.HOST_NAME, RunConfiguration.getHostName());
 		logRunData(RunConfiguration.HOST_OS, RunConfiguration.getOS());
 		logRunData(RunConfiguration.HOST_ADDRESS, RunConfiguration.getHostAddress());
 		logRunData(RunConfiguration.APP_VERSION, RunConfiguration.getAppVersion());
 
-		RunConfiguration.getCollectedTestDataProperties().entrySet().stream().forEach(collectedDataInfo -> {
+		RunConfiguration.getCollectedTestDataProperties().entrySet().stream().forEach { collectedDataInfo ->
 			logRunData(collectedDataInfo.getKey(), collectedDataInfo.getValue());
-		});
+		};
 	}
 
 	public void endTestCaseBinding(String name) {
@@ -154,7 +155,7 @@ public class KeywordLogger {
 		logger.info("END {}", name);
 		xmlKeywordLogger.endTest(name, attributes);
 	}
-	
+
 	public void startCalledTest(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
 		logger.info(TEST_CASE_HR);
 		logger.info("CALL {}", name);
@@ -170,19 +171,19 @@ public class KeywordLogger {
 
 
 	public void startListenerKeyword(
-			String name,
-			Map<String, String> attributes,
-			Stack<KeywordStackElement> keywordStack) {
+	String name,
+	Map<String, String> attributes,
+	Stack<KeywordStackElement> keywordStack) {
 		logStartKeyword(name, attributes);
 		xmlKeywordLogger.startListenerKeyword(name, attributes, keywordStack);
 	}
 
 
 	public void startKeyword(
-			String name,
-			String actionType,
-			Map<String, String> attributes,
-			Stack<KeywordStackElement> keywordStack) {
+	String name,
+	String actionType,
+	Map<String, String> attributes,
+	Stack<KeywordStackElement> keywordStack) {
 		if (shouldLogTestSteps()) {
 			name = MaskedTextUtil.maskedTextBasedOnKeyword(name);
 			logStartKeyword(name, attributes);
@@ -210,7 +211,7 @@ public class KeywordLogger {
 
 
 	public void startKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-		
+
 		if (shouldLogTestSteps()) {
 			name = MaskedTextUtil.maskedTextBasedOnKeyword(name);
 			logStartKeyword(name, attributes);
@@ -220,7 +221,7 @@ public class KeywordLogger {
 
 
 	public void startKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-		
+
 		if (shouldLogTestSteps()) {
 			name = MaskedTextUtil.maskedTextBasedOnKeyword(name);
 			logStartKeyword(name, attributes);
@@ -230,7 +231,7 @@ public class KeywordLogger {
 
 
 	public void endKeyword(String name, Map<String, String> attributes, int nestedLevel) {
-		
+
 		if (shouldLogTestSteps()) {
 			logEndKeyword(name, attributes);
 			xmlKeywordLogger.endKeyword(name, attributes, nestedLevel);
@@ -248,20 +249,20 @@ public class KeywordLogger {
 
 
 	public void endListenerKeyword(
-			String name,
-			Map<String, String> attributes,
-			Stack<KeywordStackElement> keywordStack) {
+	String name,
+	Map<String, String> attributes,
+	Stack<KeywordStackElement> keywordStack) {
 		logEndKeyword(name, attributes);
 		xmlKeywordLogger.endListenerKeyword(name, attributes, keywordStack);
 	}
 
 
 	public void endKeyword(
-			String name,
-			String keywordType,
-			Map<String, String> attributes,
-			Stack<KeywordStackElement> keywordStack) {
-		
+	String name,
+	String keywordType,
+	Map<String, String> attributes,
+	Stack<KeywordStackElement> keywordStack) {
+
 		if (shouldLogTestSteps()) {
 			logEndKeyword(name, attributes);
 			xmlKeywordLogger.endKeyword(name, keywordType, attributes, keywordStack);
@@ -270,13 +271,13 @@ public class KeywordLogger {
 
 
 	public void endKeyword(String name, Map<String, String> attributes, Stack<KeywordStackElement> keywordStack) {
-		
+
 		if (shouldLogTestSteps()) {
 			logEndKeyword(name, attributes);
 			xmlKeywordLogger.endKeyword(name, attributes, keywordStack);
 		}
 	}
-	
+
 	public void logFailed(String message) {
 		logFailed(message, null);
 	}
@@ -303,12 +304,12 @@ public class KeywordLogger {
 		TestOpsLogHelper.handleFailedLogEntry(attributes);
 		xmlKeywordLogger.logFailed(message, attributes);
 	}
-	
+
 
 	public void logWarning(String message) {
 		logWarning(message, null);
 	}
-	
+
 	public void logWarning(String message, Map<String, String> attributes, Throwable throwable) {
 		if (attributes == null) {
 			attributes = new HashMap<>();
@@ -319,7 +320,7 @@ public class KeywordLogger {
 		attributes.putAll(exceptionAttributes);
 		logWarning(message, attributes);
 	}
-	
+
 	public void logWarning(String message, Map<String, String> attributes, Throwable throwable, boolean isKeyword) {
 		if (isKeyword && !shouldLogTestSteps()) {
 			return;
@@ -342,7 +343,7 @@ public class KeywordLogger {
 		logger.debug("{} {}", PASSED, message);
 		StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
 		if (attributes == null) {
-			 attributes = TestOpsLogHelper.getTestOpsAttributes(LogLevel.PASSED, stackTraces);
+			attributes = TestOpsLogHelper.getTestOpsAttributes(LogLevel.PASSED, stackTraces);
 		} else {
 			attributes = new HashMap<>(attributes);
 			attributes.putAll(TestOpsLogHelper.getTestOpsAttributes(LogLevel.PASSED, stackTraces));
@@ -356,8 +357,8 @@ public class KeywordLogger {
 		}
 		logPassed(message, attributes);
 	}
-	
-	
+
+
 
 	public void logInfo(String message) {
 		logInfo(message, null);
@@ -372,7 +373,7 @@ public class KeywordLogger {
 		String paddingLine = "\u2502" + StringUtils.leftPad("", innerLength) + "\u2502";
 		String innerSpaces = StringUtils.leftPad("", innerLength, "\u2500");
 		String paddingSpaces = StringUtils.leftPad("", paddingX);
-		
+
 		logInfo("");
 		logInfoCenter("\u256D" + innerSpaces + "\u256e", fullLength);
 		logInfoCenter(paddingLine, fullLength);
@@ -381,11 +382,11 @@ public class KeywordLogger {
 		logInfoCenter("\u2570" + innerSpaces + "\u256f", fullLength);
 		logInfo("");
 	}
-	
+
 	public void logInfoCenter(String message) {
 		logInfoCenter(message, 80);
 	}
-	
+
 	public void logInfoCenter(String message, int lineLength) {
 		logInfo(StringUtils.center(message, lineLength), null);
 	}
@@ -401,7 +402,7 @@ public class KeywordLogger {
 		logger.info("{} = {}", dataKey, dataValue);
 		xmlKeywordLogger.logRunData(dataKey, dataValue);
 	}
-	
+
 	public void logError(String message, Map<String, String> attributes, Throwable throwable) {
 		if (attributes == null) {
 			attributes = new HashMap<>();
@@ -444,19 +445,19 @@ public class KeywordLogger {
 	private void log(LogLevel level, String message) {
 		switch (level) {
 			case WARNING:
-				logger.warn(message);
-				break;
+			logger.warn(message);
+			break;
 			case NOT_RUN:
-				logger.warn("SKIP {}", message);
-				break;
+			logger.warn("SKIP {}", message);
+			break;
 			case FAILED:
 			case ERROR:
 			case ABORTED:
 			case INCOMPLETE:
-				logger.error("{} {}", FAILED, message);
-				break;
+			logger.error("{} {}", FAILED, message);
+			break;
 			default:
-				logger.info(message);
+			logger.info(message);
 		}
 	}
 
@@ -486,11 +487,11 @@ public class KeywordLogger {
 		logger.debug(message);
 		xmlKeywordLogger.logDebug(this, message, null);
 	}
-	
+
 	public boolean isInfoEnabled() {
 		return logger.isInfoEnabled();
 	}
-	
+
 	public boolean isDebugEnabled() {
 		return logger.isDebugEnabled();
 	}
