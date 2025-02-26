@@ -77,8 +77,8 @@ public class KeywordLogger {
 			shouldLogTestSteps = true;
 		} else {
 			shouldLogTestSteps = (boolean) Optional
-			.ofNullable(executionProperties.get(RunConfiguration.LOG_TEST_STEPS))
-			.orElse(CoreConstants.DEFAULT_LOG_TEST_STEPS);
+					.ofNullable(executionProperties.get(RunConfiguration.LOG_TEST_STEPS))
+					.orElse(CoreConstants.DEFAULT_LOG_TEST_STEPS);
 		}
 	}
 
@@ -171,19 +171,19 @@ public class KeywordLogger {
 
 
 	public void startListenerKeyword(
-	String name,
-	Map<String, String> attributes,
-	Stack<KeywordStackElement> keywordStack) {
+			String name,
+			Map<String, String> attributes,
+			Stack<KeywordStackElement> keywordStack) {
 		logStartKeyword(name, attributes);
 		xmlKeywordLogger.startListenerKeyword(name, attributes, keywordStack);
 	}
 
 
 	public void startKeyword(
-	String name,
-	String actionType,
-	Map<String, String> attributes,
-	Stack<KeywordStackElement> keywordStack) {
+			String name,
+			String actionType,
+			Map<String, String> attributes,
+			Stack<KeywordStackElement> keywordStack) {
 		if (shouldLogTestSteps()) {
 			name = MaskedTextUtil.maskedTextBasedOnKeyword(name);
 			logStartKeyword(name, attributes);
@@ -249,19 +249,19 @@ public class KeywordLogger {
 
 
 	public void endListenerKeyword(
-	String name,
-	Map<String, String> attributes,
-	Stack<KeywordStackElement> keywordStack) {
+			String name,
+			Map<String, String> attributes,
+			Stack<KeywordStackElement> keywordStack) {
 		logEndKeyword(name, attributes);
 		xmlKeywordLogger.endListenerKeyword(name, attributes, keywordStack);
 	}
 
 
 	public void endKeyword(
-	String name,
-	String keywordType,
-	Map<String, String> attributes,
-	Stack<KeywordStackElement> keywordStack) {
+			String name,
+			String keywordType,
+			Map<String, String> attributes,
+			Stack<KeywordStackElement> keywordStack) {
 
 		if (shouldLogTestSteps()) {
 			logEndKeyword(name, attributes);
@@ -395,6 +395,7 @@ public class KeywordLogger {
 	public void logInfo(String message, Map<String, String> attributes) {
 		logger.info(message);
 		xmlKeywordLogger.logInfo(this, message, attributes);
+		println "[fake KeywordLogger#logInfo] ${message}"
 	}
 
 
@@ -445,19 +446,19 @@ public class KeywordLogger {
 	private void log(LogLevel level, String message) {
 		switch (level) {
 			case WARNING:
-			logger.warn(message);
-			break;
+				logger.warn(message);
+				break;
 			case NOT_RUN:
-			logger.warn("SKIP {}", message);
-			break;
+				logger.warn("SKIP {}", message);
+				break;
 			case FAILED:
 			case ERROR:
 			case ABORTED:
 			case INCOMPLETE:
-			logger.error("{} {}", FAILED, message);
-			break;
+				logger.error("{} {}", FAILED, message);
+				break;
 			default:
-			logger.info(message);
+				logger.info(message);
 		}
 	}
 
